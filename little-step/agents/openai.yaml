@@ -1,0 +1,4 @@
+interface:
+  display_name: "Little Step"
+  short_description: "Small-step coding collaboration protocol."
+  default_prompt: "Use $little-step to help me make the next simplest correct coding change."
