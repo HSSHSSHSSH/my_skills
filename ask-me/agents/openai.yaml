@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ask Me"
+  short_description: "Clarify needs before acting"
+  default_prompt: "Use $ask-me to clarify my requirements before planning or editing."
