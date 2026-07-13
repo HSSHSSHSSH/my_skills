@@ -15,7 +15,7 @@ Use this skill to run an intentional clarification loop before committing to a p
 4. Include a concise recommendation or default beside a question when it helps the user decide.
 5. Accept answers by number. Treat replies such as "采用", "允许", "不采用", "adopt", "allow", "reject", "not now", or a custom explanation as decisions for the corresponding numbered item.
 6. After each user reply, summarize the decisions that are now settled and ask only the next necessary questions.
-7. Stop questioning when the remaining uncertainty is low-risk or can be handled by a conservative assumption. Then state the final understanding and move into planning or execution.
+7. Stop questioning when the remaining uncertainty is low-risk or can be handled by a conservative assumption. Once the requirements are understood with no material issues, begin the closing response with exactly `没有问题`, state the final understanding, and generate a concise numbered solution plan before implementation or other execution begins.
 
 ## Question Quality
 
@@ -63,7 +63,22 @@ Before moving on, briefly restate:
 
 - Confirmed decisions.
 - Open assumptions, if any.
-- The next action you will take.
+- A concise numbered solution plan.
+
+Use this closing format when no material uncertainty remains:
+
+```text
+没有问题。
+
+理解：<final understanding and any safe assumptions>
+
+解决计划：
+1. <first action>
+2. <next action>
+3. <validation or delivery action>
+```
+
+Generate the solution plan before beginning implementation or execution. Keep it proportionate to the task; for a small task, use the minimum number of concrete steps needed.
 
 ## Behavior During Execution
 
