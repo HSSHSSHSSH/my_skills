@@ -7,16 +7,6 @@ description: Use when Codex should deliberately clarify requirements before plan
 
 Use this skill to run an intentional clarification loop before committing to a plan or implementation. Prefer Chinese when the active conversation is Chinese.
 
-## Destructive Edit Confirmation
-
-Before making a destructive change to an existing file, ask the user:
-
-```text
-即将进行破坏性编辑，是否开始任务？请回复“开始任务”以继续。
-```
-
-Treat deletion, overwriting or replacing existing content, and bulk or irreversible rewrites as destructive changes. Do not make such a change until the user replies with exactly `开始任务` (ignoring leading and trailing whitespace only). Do not treat similar replies such as `开始`, `可以`, or `开始任务吧` as permission. Do not ask for this confirmation for clarification, planning, research, read-only inspection, or changes that do not destructively modify existing files. Once confirmed, do not ask again for the same continuous destructive-editing task.
-
 ## Core Protocol
 
 1. Start by identifying what is already clear, what is still uncertain, and which uncertainties would change the work.
@@ -25,7 +15,7 @@ Treat deletion, overwriting or replacing existing content, and bulk or irreversi
 4. Include a concise recommendation or default beside a question when it helps the user decide.
 5. Accept answers by number. Treat replies such as "采用", "允许", "不采用", "adopt", "allow", "reject", "not now", or a custom explanation as decisions for the corresponding numbered item.
 6. After each user reply, summarize the decisions that are now settled and ask only the next necessary questions.
-7. Stop questioning when the remaining uncertainty is low-risk or can be handled by a conservative assumption. Once the requirements are understood with no material issues, begin the closing response with exactly `没有问题`, state the final understanding, and generate a concise numbered solution plan before implementation or other execution begins.
+7. Stop questioning when the remaining uncertainty is low-risk or can be handled by a conservative assumption. Once the requirements are understood with no material issues, begin the closing response with exactly `没有问题`, list each question or issue resolved together with its agreed decision, and generate a concise numbered execution plan. Then wait for the user's next explicit instruction; do not begin implementation or other execution.
 
 ## Question Quality
 
@@ -69,26 +59,32 @@ Stop the clarification loop when:
 - Key constraints, data shapes, permissions, and acceptance criteria are clear enough for the task.
 - Remaining details can be handled with stated assumptions.
 
-Before moving on, briefly restate:
+Before waiting for the user's next instruction, state:
 
-- Confirmed decisions.
-- Open assumptions, if any.
-- A concise numbered solution plan.
+- The final understanding and any open assumptions.
+- A numbered list of each question or issue that was resolved and its agreed decision. If no explicit questions arose, list the agreed requirements instead.
+- A concise numbered execution plan.
 
 Use this closing format when no material uncertainty remains:
 
 ```text
 没有问题。
 
-理解：<final understanding and any safe assumptions>
+已达成一致的问题清单：
+1. <question or issue>: <agreed decision>
+2. <question or issue>: <agreed decision>
 
-解决计划：
+理解与假设：<final understanding and any safe assumptions>
+
+执行计划：
 1. <first action>
 2. <next action>
 3. <validation or delivery action>
+
+等待你的下一步指令。
 ```
 
-Generate the solution plan before beginning implementation or execution. Keep it proportionate to the task; for a small task, use the minimum number of concrete steps needed.
+Generate the execution plan before implementation or execution. Keep it proportionate to the task; for a small task, use the minimum number of concrete steps needed. After issuing this closing response, do not edit files, use tools, or perform the plan until the user gives a subsequent explicit instruction.
 
 ## Behavior During Execution
 
