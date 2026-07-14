@@ -7,6 +7,16 @@ description: Use when Codex should deliberately clarify requirements before plan
 
 Use this skill to run an intentional clarification loop before committing to a plan or implementation. Prefer Chinese when the active conversation is Chinese.
 
+## Destructive Edit Confirmation
+
+Before making a destructive change to an existing file, ask the user:
+
+```text
+即将进行破坏性编辑，是否开始任务？请回复“开始任务”以继续。
+```
+
+Treat deletion, overwriting or replacing existing content, and bulk or irreversible rewrites as destructive changes. Do not make such a change until the user replies with exactly `开始任务` (ignoring leading and trailing whitespace only). Do not treat similar replies such as `开始`, `可以`, or `开始任务吧` as permission. Do not ask for this confirmation for clarification, planning, research, read-only inspection, or changes that do not destructively modify existing files. Once confirmed, do not ask again for the same continuous destructive-editing task.
+
 ## Core Protocol
 
 1. Start by identifying what is already clear, what is still uncertain, and which uncertainties would change the work.
