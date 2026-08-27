@@ -1,0 +1,4 @@
+interface:
+  display_name: "Context Handoff"
+  short_description: "Assess context risk and prepare a reliable handoff"
+  default_prompt: "Use $context-handoff to assess whether this task needs a fresh context and prepare a copyable handoff prompt if it does."
