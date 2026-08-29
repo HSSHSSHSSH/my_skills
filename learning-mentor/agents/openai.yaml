@@ -1,0 +1,4 @@
+interface:
+  display_name: "Learning Mentor"
+  short_description: "Personal step-by-step learning mentor"
+  default_prompt: "Use $learning-mentor to resume my active learning track from the latest confirmed checkpoint."
