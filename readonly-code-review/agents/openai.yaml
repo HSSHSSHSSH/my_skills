@@ -1,0 +1,4 @@
+interface:
+  display_name: "readonly-code-review"
+  short_description: "Read-only review with approved file scope"
+  default_prompt: "Use $readonly-code-review to review this code without making changes."

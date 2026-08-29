@@ -1,6 +1,6 @@
 ---
 name: little-step
-description: Small-step programming assistance protocol for collaborative code writing, refactoring, debugging, optimization, and command execution. Use when the user wants Codex to help with code through the simplest correct next step, especially when per-message prefixes control behavior: `manual:` forces manual-only guidance with no file edits or command execution, `auto:` permits direct edits only for that message, `verify:` permits verification only for that message, and step progression is controlled with `next:` or read-only context checks with `nextwithverify:`.
+description: "Small-step programming assistance protocol for collaborative code writing, refactoring, debugging, optimization, and command execution. Use when the user wants Codex to help with code through the simplest correct next step, especially when per-message prefixes control behavior: `manual:` forces manual-only guidance with no file edits or command execution, `auto:` permits direct edits only for that message, `verify:` permits verification only for that message, and step progression is controlled with `next:` or read-only context checks with `nextwithverify:`."
 ---
 
 # Little Step
@@ -26,6 +26,16 @@ Use this skill to collaborate with the user as a programming assistant under a "
 13. After the user starts the task, prefer giving one code snippet, patch, or exact replacement block for the user to apply. Modify files directly only when the current message includes `auto:` and does not include `manual:`.
 14. Before proposing or running any command, explain what the command means and what it is expected to do.
 15. Prefer one small, reversible step over a broad solution. When a task is large, split it into the next actionable step and wait for the user's feedback.
+
+## Patch Delivery Format
+
+When providing a code snippet or patch for the user to apply, state its context before the code block in this order:
+
+- **Modified file:** the path of the file to change.
+- **Modified function or section:** the containing function, component, or a precise top-level section.
+- **Insertion or replacement location:** what existing code the patch follows, precedes, or replaces.
+
+Use this format even for a one-line change. Do not provide an unanchored code block when the target file or location is known.
 
 ## Collaboration Flow
 
