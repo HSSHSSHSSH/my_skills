@@ -1,7 +1,7 @@
 # AI Agent Rolling Task Queue
 
-revision: 21  
-updated_at: 2026-08-19
+revision: 29  
+updated_at: 2026-09-17
 
 ## Queue Rules
 
@@ -52,13 +52,13 @@ The gate passed with confirmed integration evidence, a deterministic read-only t
 
 | id | status | task | completion evidence |
 |---|---|---|---|
-| `AI-021` | `current` | Observe and explain one real Claude `tool_use` response for `get_order`. | Record `stop_reason`, tool-use block ID, name, and input, while executing nothing automatically. |
-| `AI-022` | `queued` | Generate and inspect the `get_order` tool JSON Schema. | Explain the relationship between the Pydantic input model, JSON Schema, and runtime validation. |
-| `AI-023` | `queued` | Implement a tool registry and dispatcher. | Dispatch a known tool to the correct function and reject an unknown tool name in tests. |
-| `AI-024` | `queued` | Validate tool arguments and format a deterministic `tool_result`. | Valid input produces a serialized result and invalid input produces a controlled error result. |
-| `AI-025` | `queued` | Complete one manual `tool_use` to `tool_result` round trip. | Claude requests `get_order`, the back end executes it, and a follow-up response ends with a grounded answer. |
-| `AI-026` | `queued` | Implement the minimal Agent loop. | The loop handles a direct `end_turn` and a one-tool path without framework automation. |
-| `AI-027` | `queued` | Add loop guards and controlled failure handling. | Tests cover maximum steps, repeated calls, unknown tools, invalid arguments, and tool exceptions. |
-| `AI-028` | `queued` | Add a deterministic read-only report tool. | The report tool has a schema, fixed-data behavior, and tests independent of the model. |
-| `AI-029` | `queued` | Add a consequential write tool with approval and idempotency protection. | No write occurs without explicit approval, and retries do not duplicate the action. |
+| `AI-021` | `completed` | Observe and explain one real Claude `tool_use` response for `get_order`. | Record `stop_reason`, tool-use block ID, name, and input, while executing nothing automatically. |
+| `AI-022` | `completed` | Generate and inspect the `get_order` tool JSON Schema. | Explain the relationship between the Pydantic input model, JSON Schema, and runtime validation. |
+| `AI-023` | `completed` | Implement a tool registry and dispatcher. | Dispatch a known tool to the correct function and reject an unknown tool name in tests. |
+| `AI-024` | `completed` | Validate tool arguments and format a deterministic `tool_result`. | Valid input produces a serialized result and invalid input produces a controlled error result. |
+| `AI-025` | `completed` | Complete one manual `tool_use` to `tool_result` round trip. | Claude requests `get_order`, the back end executes it, and a follow-up response ends with a grounded answer. |
+| `AI-026` | `completed` | Implement the minimal Agent loop. | The loop handles a direct `end_turn` and a one-tool path without framework automation. |
+| `AI-027` | `completed` | Add loop guards and controlled failure handling. | Tests cover maximum steps, repeated calls, unknown tools, invalid arguments, and tool exceptions. |
+| `AI-028` | `completed` | Add a deterministic read-only report tool. | The report tool has a schema, fixed-data behavior, and tests independent of the model. |
+| `AI-029` | `current` | Add a consequential write tool with approval and idempotency protection. | No write occurs without explicit approval, and retries do not duplicate the action. |
 | `AI-030` | `queued` | Record, test, and replay one complete Agent run. | A trace reproduces messages, tool requests, results, stop reasons, and the final outcome. |

@@ -1,7 +1,7 @@
 # Command Reference
 
-revision: 2  
-updated_at: 2026-08-01
+revision: 3  
+updated_at: 2026-09-17
 
 Prefixes express intent and are not strict syntax. Accept equivalent natural language. Unless stated otherwise, commands do not grant persistent permission.
 
@@ -34,6 +34,7 @@ Behavior:
 - Read the active track, progress, roadmap, and task queue.
 - Restate only the current phase, task, and immediate subgoal.
 - Teach one small step and stop at a natural checkpoint.
+- For new exercise code, follow the learner-written-code guidance in `SKILL.md`: provide a minimal starting skeleton, hints, and success criteria; give a complete solution only when explicitly requested.
 - Preserve all branch questions as side discussions.
 
 Writes: none by default.

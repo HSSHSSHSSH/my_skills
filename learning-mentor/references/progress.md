@@ -1,7 +1,7 @@
 # Learning Progress
 
-revision: 24  
-updated_at: 2026-08-19
+revision: 33  
+updated_at: 2026-09-17
 
 ## Current Position
 
@@ -9,14 +9,14 @@ updated_at: 2026-08-19
 - phase_id: `phase-3`
 - phase_title: Agent Loop From First Principles
 - task_queue: `tasks-ai-agent.md`
-- current_task_id: `AI-021`
+- current_task_id: `AI-029`
 - current_task_status: `not_started`
-- last_confirmed_checkpoint: `AI-020`
-- latest_handoff_revision: 3
+- last_confirmed_checkpoint: `AI-028`
+- latest_handoff_revision: 4
 
 ## Current Objective
 
-Observe one real Claude `tool_use` response and distinguish the model's request from back-end validation, authorization, execution, and tool results.
+Add a consequential write tool with explicit approval and idempotency protection.
 
 ## Confirmed Strengths
 
@@ -27,11 +27,11 @@ Observe one real Claude `tool_use` response and distinguish the model's request 
 
 - Python fluency is limited.
 - ML, Transformer, LLM application primitives, and Agent loops are not yet established.
-- No confirmed Agent project evidence yet.
+- Deterministic read-only query and report tools exist, but the report tool is not yet integrated into the dispatcher, runner, or Agent loop. Approval-protected writes and replayable runs remain outstanding.
 
 ## Next Action
 
-Start `AI-021` by sending the `get_order` tool definition to Claude, inspecting `stop_reason` and the returned `tool_use` block, and executing nothing automatically.
+When the learner resumes, start `AI-029` by explaining approval and idempotency and defining the smallest consequential write operation before implementation. The task remains not started.
 
 ## State Rules
 

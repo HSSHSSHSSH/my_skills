@@ -1,7 +1,7 @@
 # Confirmed Decisions
 
-revision: 2  
-updated_at: 2026-08-01
+revision: 3  
+updated_at: 2026-09-17
 
 ## 2026-07-31 - Initial Mentor Design
 
@@ -27,6 +27,14 @@ updated_at: 2026-08-01
 - decision: Add a five-part sequence for genuinely new concepts: explain what it is, the problem it solves, its project position, and one minimal example before moving into operations.
 - reason: The ordered protocol prevents unexplained terminology from becoming a prerequisite for action while preserving the small-step teaching style.
 - affected_files: `SKILL.md`, `references/mentor-backlog.md`, and `references/decisions.md`.
+
+### 2026-09-17 - Learner-Written Code With Starting Skeletons
+
+- context: During AI-028, the learner requested guidance before complete answers and clarified that a function signature with comments is a useful starting point.
+- alternatives: Continue supplying complete examples, provide hints alone, or use minimal starting skeletons with hints and success criteria.
+- decision: Default to minimal starting skeletons and learner implementation for new exercise code; give complete solutions only when explicitly requested. Guide corrections during review, while preserving minimal conceptual examples that do not reveal the exercise solution.
+- reason: This provides a concrete entry point while preserving the learner's opportunity to practice independently.
+- affected_files: `SKILL.md`, `references/command-reference.md`, `references/mentor-backlog.md`, and `references/decisions.md`.
 
 ## Decision Entry Format
 

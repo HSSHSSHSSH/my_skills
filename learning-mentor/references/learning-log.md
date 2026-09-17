@@ -1,7 +1,7 @@
 # Learning Log
 
-revision: 23  
-updated_at: 2026-08-19
+revision: 32  
+updated_at: 2026-09-17
 
 Record only confirmed learning events. Keep entries concise; do not copy full conversations.
 
@@ -171,3 +171,66 @@ Record only confirmed learning events. Keep entries concise; do not copy full co
 - Confirmed understanding: Claude may request tools, while trusted back-end code validates, authorizes, and executes them; business data and deterministic tools provide facts. Tool loops continue on `tool_use`, finish normally on `end_turn`, and handle other stop reasons separately.
 - Remaining gap: A real `tool_use` response, dispatcher, `tool_result` round trip, guarded loop, approval-protected write, and replayable trace have not yet been implemented. The third-party proxy's tool-use compatibility and `.env` Git-ignore status remain unverified.
 - Next action: In a new conversation, run `resume: 从最近一次交接点继续`, then start `AI-021` by observing one real `get_order` tool request without automatically executing it.
+
+### 2026-08-29 - ai-agent - AI-021
+
+- Evidence: Sent the `get_order` tool definition through the configured Claude-compatible endpoint and observed `stop_reason="tool_use"` with one real tool-use block: ID `call_fDatveVgqmZ2u3r1UrYp38d2`, name `get_order`, and input `{"order_id": "ORD-1001"}`. The diagnostic executed no tool automatically.
+- Confirmed understanding: Tool input is model-generated and untrusted. The back end must allowlist the tool, validate arguments, authorize access, and only then execute it. Missing `tool_result` proves no result was returned to Claude, while non-execution is established by the absence of a tool call in the application path. Unauthorized requests must not execute or disclose data and should return a controlled error result.
+- Remaining gap: The Pydantic input model's generated JSON Schema has not yet been compared with Claude's `input_schema`, and no dispatcher or `tool_result` round trip exists.
+- Next action: Start `AI-022` by generating and inspecting the `get_order` input JSON Schema and explaining its relationship to Pydantic runtime validation.
+
+### 2026-08-29 - ai-agent - AI-022
+
+- Evidence: Generated `GetOrderInput.model_json_schema()` and inspected an object schema with required string field `order_id` and `minLength: 1`. Compared it with the manually maintained Claude `input_schema` and identified that the generated schema included `minLength` but omitted `additionalProperties: false`, while the manual schema had the opposite difference.
+- Confirmed understanding: JSON Schema is a description generated from the trusted Pydantic model and supplied to Claude as guidance. Claude returns untrusted tool arguments rather than a schema, so the back end must pass `block.input` to `GetOrderInput.model_validate()` for actual runtime validation. Independently maintained schemas can drift.
+- Remaining gap: No tool registry or dispatcher exists, so a known tool cannot yet be selected safely and an unknown name is not yet rejected in code.
+- Next action: Start `AI-023` by implementing a registry and dispatcher for `get_order`, with an explicit unknown-tool failure path.
+
+### 2026-08-29 - ai-agent - AI-023
+
+- Evidence: Implemented `TOOL_REGISTRY`, `dispatch_tool()`, and `UnknownToolError` in `tool_dispatcher.py`. Added focused tests proving that `get_order` dispatches to the expected deterministic function and that unregistered `delete_order` is rejected; `python -m pytest -q test_tool_dispatcher.py` passed both tests in 0.08 seconds.
+- Confirmed understanding: A Python function's existence does not authorize model access. The registry is an explicit allowlist of capabilities available to the model, and the dispatcher must reject names outside it instead of dynamically resolving arbitrary functions.
+- Remaining gap: The dispatcher currently accepts an already-created `GetOrderInput`; raw model arguments are not yet validated at the dispatch boundary or formatted into deterministic success and error `tool_result` content.
+- Next action: Start `AI-024` by validating raw arguments with Pydantic and formatting controlled serializable results for both valid and invalid input.
+
+### 2026-08-29 - ai-agent - AI-024
+
+- Evidence: Implemented `tool_runner.py` to validate raw `get_order` arguments before dispatch and serialize deterministic success or controlled error `tool_result` blocks. Added focused valid- and invalid-input tests; `python -m pytest -q test_tool_runner.py` passed both tests in 0.07 seconds.
+- Confirmed understanding: Claude-generated tool arguments are untrusted and must pass Pydantic validation before dispatch. Validation failure returns a controlled error without executing the tool. The original `tool_use_id` correlates each `tool_result` with its `tool_use`, and fixed JSON serialization supports stable tests and logs.
+- Remaining gap: The generated `tool_result` has not yet been sent back to Claude in a real follow-up request, so no grounded final response has been observed.
+- Next action: Start `AI-025` by preserving Claude's assistant tool-use message, executing its validated request, and sending the correlated `tool_result` in a follow-up user message.
+
+### 2026-08-30 - ai-agent - AI-025
+
+- Evidence: Completed a real two-request Claude tool round trip. The first response stopped with `tool_use` for `get_order({"order_id": "A001"})`; the Python back end returned a correlated successful `tool_result` containing status `paid` and amount `199.0`. The second response stopped with `end_turn` and grounded its final answer in those exact tool facts.
+- Confirmed understanding: Claude requests the action while Python application code validates and executes the tool. Claude Messages API requests are stateless, so the follow-up request must resend the relevant user message, the complete assistant tool-use response, and the correlated user `tool_result`; it does not require unbounded unrelated history.
+- Remaining gap: The working path is still written as one fixed two-request sequence rather than a reusable loop that branches on each response's stop reason.
+- Next action: Start `AI-026` by extracting the request-and-stop-reason handling into a minimal loop that supports both direct `end_turn` and one `tool_use` path.
+
+### 2026-08-30 - ai-agent - AI-026
+
+- Evidence: Implemented `agent_loop.py` as an application-owned loop with explicit `end_turn` and one-tool `tool_use` branches. Used a fake Claude client to test a direct answer and a tool request followed by a final answer; `python -m pytest -q test_agent_loop.py` passed both tests in 0.91 seconds and verified the follow-up message structure.
+- Confirmed understanding: `stop_reason` selects the application branch, while the `return` inside the `end_turn` branch actually terminates the Python loop. A `tool_use` response appends the assistant request and correlated tool result before the next iteration. Without a guard, repeated tool requests can create unbounded latency and token cost while withholding a final response from the user.
+- Remaining gap: The loop has no maximum-step or repeated-call guard, and unknown tools, invalid arguments, and tool exceptions are not yet handled through a complete controlled-failure policy.
+- Next action: Start `AI-027` by adding a configurable maximum-step limit and a test proving that repeated `tool_use` responses stop deterministically.
+
+### 2026-08-31 - ai-agent - AI-027
+
+- Evidence: Added a configurable maximum-step guard, semantic repeated-call detection using tool name plus canonicalized arguments, controlled unknown-tool and invalid-argument results, and controlled handling for tool execution exceptions. `python -m pytest -q test_agent_loop.py` passed all seven tests in 0.85 seconds.
+- Confirmed understanding: A changing `tool_use.id` correlates requests and results but cannot identify semantic repetition; canonical JSON makes equivalent arguments comparable. Unregistered tools must not execute, invalid arguments must fail before dispatch, and recoverable failures should return correlated error `tool_result` blocks. Detailed exceptions belong in developer logs, while Claude receives a generic failure message without internal details.
+- Remaining gap: The Agent still has only one read-only query tool; no deterministic report tool, approval-protected write, or replayable run exists yet.
+- Next action: Start `AI-028` by defining explicit input and output schemas for a deterministic order-report tool, then implement and test it without calling Claude.
+
+### 2026-08-31 - ai-agent - handoff after AI-027
+
+- Evidence: Confirmed and recorded AI-021 through AI-027, completed the real tool-use round trip and guarded Agent loop, updated the learner note, and prepared a cross-conversation handoff at the clean boundary before AI-028. The latest Agent loop suite passed all seven tests in 0.85 seconds.
+- Confirmed understanding: Claude requests tools while trusted Python code allowlists, validates, executes, and returns correlated results. Semantic repetition uses the tool name plus canonicalized arguments rather than the changing tool-use ID. Recoverable tool failures return controlled results; internal exception details stay in developer logs.
+- Remaining gap: No deterministic report tool, approval-protected idempotent write, or replayable run exists yet. The current loop and runner are still specialized to `get_order`, and `.env` Git-ignore status remains unverified.
+- Next action: In a new conversation, run `resume: 从最近一次交接点继续`, then start AI-028 by defining the smallest useful order-report input and output schemas without calling Claude.
+
+### 2026-09-17 - ai-agent - AI-028
+
+- Evidence: Implemented OrderReportInput and OrderReportOutput with OrderStatus and a nonnegative order_count constraint, plus generate_order_report() over fixed ORDERS in E:/code/S/ai/python-learning/ai-012-020/order_tools.py. Code inspection confirms that the function reads orders without modifying them and does not call Claude. Five new report tests cover matching counts, zero matches, deterministic results, invalid input status, and negative output counts; the learner reported 10 passed in 0.08 seconds for python -m pytest -q test_order_tools.py, including the five existing query tests.
+- Confirmed understanding: A valid status with no matching orders returns a normal zero-count report; an unsupported status fails Pydantic validation before the function runs. The returned status preserves the input condition. Model field names and local variable names can differ; pytest.raises fails if the expected exception is absent.
+- Remaining gap: Continue reinforcing model keyword names and exception assertions through practice. The report tool is not yet integrated into the dispatcher, runner, or Agent loop; approval-protected idempotent writes and replayable runs remain outstanding.
+- Next action: AI-029 is current but not started. When the learner resumes, first explain approval and idempotency and define the smallest consequential write operation before implementation.

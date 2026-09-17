@@ -1,76 +1,76 @@
 # Latest Session Handoff
 
-revision: 3  
-updated_at: 2026-08-19
+revision: 4
+updated_at: 2026-08-31
 
 - source_agent: Codex Desktop
 - active_track: `ai-agent`
 - phase: `phase-3` - Agent Loop From First Principles
-- current_task: `AI-021`
+- current_task: `AI-028`
 - current_task_status: `not_started`
-- last_confirmed_checkpoint: `AI-020`
+- last_confirmed_checkpoint: `AI-027`
 
 ## Completed In Session
 
-- Completed, reviewed, confirmed, and recorded `AI-012` through `AI-020`.
-- `AI-012` through `AI-014`: created FastAPI GET and POST routes, used Pydantic request validation, separated business errors from schema errors, and added pytest coverage.
-- `AI-015`: connected Vue to FastAPI with explicit CORS configuration and loading, success, and error states.
-- `AI-016`: called Claude from the back end, kept the API key server-side, and recorded latency and token usage.
-- `AI-017`: established the stateless Messages API model and the roles of system, user, and assistant messages.
-- `AI-018`: validated structured model output with Pydantic and deliberately detected an invalid enum value.
-- `AI-019`: streamed Claude output through FastAPI to Vue, decoded chunks incrementally, and handled browser interruption.
-- `AI-020`: implemented and tested a deterministic, read-only `get_order` tool over synthetic data.
-- Passed the Agent Core Loop phase gate and generated the `AI-021` through `AI-030` task batch.
+- Completed, reviewed, confirmed, and recorded `AI-021` through `AI-027`.
+- `AI-021`: observed a real Claude `tool_use` response without automatic execution.
+- `AI-022`: generated and inspected the `GetOrderInput` JSON Schema and separated schema guidance from runtime validation.
+- `AI-023`: implemented `TOOL_REGISTRY`, dispatcher behavior, and unknown-tool rejection.
+- `AI-024`: validated raw model arguments and generated deterministic success and error `tool_result` blocks.
+- `AI-025`: completed a real `tool_use -> tool_result -> end_turn` round trip for order A001.
+- `AI-026`: implemented a minimal application-owned Agent loop and fake-client tests.
+- `AI-027`: added maximum-step and semantic repeated-call guards plus controlled unknown-tool, invalid-argument, and tool-exception handling.
+- Updated `E:/code/S/ai/note.md` with the confirmed AI-021 through AI-027 concepts and review questions.
 
 ## Confirmed Understanding
 
-- Claude requests tool calls; trusted back-end code validates, authorizes, and executes them.
-- `get_order` and its backing business data are the source of order facts; Claude is not the source of those facts.
-- A Pydantic class performs Python runtime validation, while its JSON Schema can be sent to Claude as an `input_schema` describing accepted tool input.
-- A tool loop continues when `stop_reason == "tool_use"`, finishes normally when `stop_reason == "end_turn"`, and handles other stop reasons separately.
-- Stream chunks are transport fragments, not guaranteed JSON objects, words, or sentence boundaries.
-- Browser abort can stop further delivery and propagate cancellation, but it cannot undo tokens already generated or consumed.
-- CORS is a browser-origin policy, not authentication or business authorization.
-- HTTP `200` does not prove model output is schema-valid or business-usable.
+- Claude requests actions; trusted Python back-end code validates, authorizes, and executes tools.
+- JSON Schema guides Claude, while Pydantic `model_validate()` enforces runtime input constraints.
+- `TOOL_REGISTRY` is the model-callable capability allowlist; the existence of a Python function does not authorize it.
+- `tool_use_id` correlates a result with one request, but semantic repetition is detected with the tool name and canonicalized input.
+- `sort_keys=True` makes equivalent dictionaries produce stable serialized fingerprints.
+- Unknown tools and invalid arguments must not execute. Recoverable failures return correlated error `tool_result` blocks instead of aborting the entire loop.
+- Detailed tool exceptions serve developers through logs; Claude receives a generic failure result without internal details.
+- Maximum steps and repeated-call detection do not replace write-operation approval, idempotency, or side-effect deduplication.
 
 ## Fragile Or Unresolved
 
-- Continue reinforcing corrected boundaries: do not parse every stream chunk as complete JSON; do not treat abort as merely ignoring a still-running request; do not treat Claude as the business fact source; and do not use `content` presence or a null stop reason as the loop termination rule.
-- The configured third-party Claude-compatible proxy has not yet demonstrated support for real tool use.
-- No real tool-use response fields have been observed yet.
-- JSON Schema inspection, registry, dispatcher, argument validation, `tool_result`, minimal loop, guards, approval, idempotency, trace, and replay remain unimplemented.
-- The back-end `.env` is plaintext and its Git-ignore status remains unverified; it must not be committed until an ignore rule is confirmed.
-- Use only synthetic, non-sensitive data with the third-party proxy.
+- Python API fluency is still developing; continue reinforcing JSON serialization, pytest monkeypatching, and narrow exception boundaries through use.
+- `agent_loop.py` and `tool_runner.py` remain specialized to `get_order`; AI-028 will require gradual generalization for a second tool.
+- `agent_loop.py` has non-blocking duplicate-import, indentation, and blank-line cleanup opportunities.
+- The configured third-party Claude-compatible proxy has demonstrated tool use with synthetic data, but use only non-sensitive data.
+- The back-end `.env` is plaintext and its Git-ignore status remains unverified; do not commit it until an ignore rule is confirmed.
+- Approval-protected idempotent writes and replayable run traces remain for AI-029 and AI-030.
 
 ## Changed Files
 
-- Project files created or changed during the completed tasks:
-  - `E:/code/S/ai/python-learning/ai-012-014/main.py`
-  - `E:/code/S/ai/python-learning/ai-012-014/frontend/src/App.vue`
-  - `E:/code/S/ai/python-learning/ai-012-014/order_tools.py`
-  - `E:/code/S/ai/python-learning/ai-012-014/test_main.py`
-  - `E:/code/S/ai/python-learning/ai-012-014/test_order_tools.py`
-  - `E:/code/S/ai/python-learning/ai-012-014/structured_test.py`
-  - `E:/code/S/ai/python-learning/ai-012-014/claude_test.py` may remain as a diagnostic script.
-  - `E:/code/S/ai/note.md`
-- Mentor state after this handoff: `progress.md` revision 24, `tasks-ai-agent.md` revision 21, `learning-log.md` revision 23, and this handoff revision 3.
+- `E:/code/S/ai/python-learning/ai-012-020/claude_test.py`
+- `E:/code/S/ai/python-learning/ai-012-020/schema_test.py`
+- `E:/code/S/ai/python-learning/ai-012-020/tool_dispatcher.py`
+- `E:/code/S/ai/python-learning/ai-012-020/test_tool_dispatcher.py`
+- `E:/code/S/ai/python-learning/ai-012-020/tool_runner.py`
+- `E:/code/S/ai/python-learning/ai-012-020/test_tool_runner.py`
+- `E:/code/S/ai/python-learning/ai-012-020/agent_loop.py`
+- `E:/code/S/ai/python-learning/ai-012-020/test_agent_loop.py`
+- `E:/code/S/ai/note.md`
+- Mentor state after confirmation: `progress.md` revision 32, `tasks-ai-agent.md` revision 28, `learning-log.md` revision 31, and this handoff revision 4.
 
 ## Verification Results
 
-- FastAPI order paths produced the expected `200` success, `422` request-validation failure, and `409` business failure.
-- The model-backed `/generate` path returned `200`, text `ok`, latency `8133.63 ms`, 969 input tokens, and 4 output tokens.
-- Valid structured output parsed as `TicketClassification`; a deliberate invalid urgency value was rejected with `literal_error`.
-- Both curl and Vue displayed streaming output incrementally. Browser abort preserved partial output, a later request completed normally, and no unhandled browser or FastAPI error was reported.
-- Five focused order-tool tests passed. The combined FastAPI and tool suite passed all eight tests with one non-blocking TestClient deprecation warning.
-- Verification evidence was produced by the learner's local runs; no project code was executed while preparing this handoff.
+- A real Claude round trip returned order A001 with status `paid` and amount `199.00`.
+- `python -m pytest -q test_tool_dispatcher.py`: 2 passed in 0.08 seconds.
+- `python -m pytest -q test_tool_runner.py`: 2 passed in 0.07 seconds.
+- `python -m pytest -q test_agent_loop.py`: 7 passed in 0.85 seconds.
+- Verification evidence came from the learner's local runs; no project code was executed while preparing this handoff.
 
 ## Decisions
 
 - Keep exactly one active track: `ai-agent`.
-- Let the learner write and run code by default; require fresh per-message `auto:` or `verify:` permission for agent edits or execution.
-- Preserve the boundary that the model requests actions while the back end executes tools and provides authoritative facts.
-- Enter Phase 3 and begin with direct observation of one real tool request.
-- Do not introduce an automatic framework-managed loop before the manual protocol is understood.
+- Let the learner write and run code by default; require fresh per-message `auto:` or `verify:` permission.
+- Keep the loop application-owned and explicit before introducing an Agent framework.
+- Treat model tool input as untrusted; allowlist names, validate arguments, and return correlated results.
+- Detect semantic repeated calls without using the changing `tool_use.id`.
+- Return controlled errors to Claude while keeping internal failure details in developer logs.
 
 ## Exact Next Action
 
@@ -78,15 +78,12 @@ In a new conversation, run:
 
 `[$learning-mentor](C:\Users\33567\.agent\my_skills\learning-mentor\SKILL.md) resume: 从最近一次交接点继续`
 
-Then start `AI-021`:
+Then start `AI-028` with one small step:
 
-1. Explain the structure of a Claude `tool_use` response.
-2. Create a minimal diagnostic that sends the `get_order` tool definition to Claude.
-3. Print and observe `stop_reason`, the tool-use block ID, tool name, and input.
-4. Execute nothing automatically.
-5. If the third-party proxy rejects tool use, capture the raw error and stop at diagnosis.
-
-The learner writes and runs the code by default. Do not edit project files or run tests without fresh current-message authorization.
+1. Explain what makes a report tool deterministic and read-only.
+2. Define the smallest useful order-report input and output schemas.
+3. Do not call Claude yet.
+4. The learner writes and runs code by default.
 
 ## Permission Reset
 

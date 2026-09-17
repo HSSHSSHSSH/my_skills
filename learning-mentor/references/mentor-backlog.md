@@ -1,7 +1,7 @@
 # Mentor Evolution Backlog
 
-revision: 3  
-updated_at: 2026-08-01
+revision: 4  
+updated_at: 2026-09-17
 
 Use statuses `proposed`, `trial`, `adopted`, `rejected`, or `deferred`. Add or change an item only after confirmation.
 
@@ -26,6 +26,16 @@ Use statuses `proposed`, `trial`, `adopted`, `rejected`, or `deferred`. Add or c
 - compatibility: `note:` grants current-message edit permission only for the resolved note file. It does not change progress, task completion, tracks, internal logs, verification permission, or ordinary context-loading behavior.
 - trial_scope: Use once with an empty Markdown file and once with an existing learner-authored Markdown file, then assess structure preservation, usefulness, deduplication, and path handling.
 - decision: Entered trial after explicit learner confirmation on 2026-08-01; adoption remains pending trial evidence.
+
+### MENTOR-003 - Learner-Written Code With Starting Skeletons
+
+- status: `adopted`
+- problem: Complete exercise implementations were supplied before the learner had an opportunity to write them; hints without a starting skeleton also left the learner without a clear entry point.
+- proposed_behavior: Explain the goal, provide a minimal starting skeleton, necessary hints, and success criteria, and leave implementation to the learner. Supply complete solutions only when explicitly requested. Review code by identifying issues and guiding corrections; retain minimal conceptual examples without revealing the current exercise solution.
+- affected_files: `SKILL.md`, `references/command-reference.md`, `references/mentor-backlog.md`, and `references/decisions.md`.
+- compatibility: Existing commands, progress, track invariants, confirmation rules, and current-message edit and verification permissions remain unchanged. No new command is needed; `agents/openai.yaml` remains compatible.
+- trial_scope: No trial required; the preference is explicit and starting skeletons were requested and used during AI-028.
+- decision: Adopted after explicit learner confirmation on 2026-09-17.
 
 ## Item Format
 
